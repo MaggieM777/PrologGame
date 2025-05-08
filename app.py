@@ -45,7 +45,6 @@ button.danger:hover {
     margin: 10px 0;
     border-left: 4px solid #2e86c1;
 }
-/* Гарантираме, че дясната колона е достатъчно широка */
 .right-column {
     min-width: 520px !important;
 }
@@ -103,6 +102,7 @@ html_code = """
 
 <script>
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const statusDiv = document.getElementById('status');
@@ -169,6 +169,7 @@ function drawScene() {
   );
   
   // Рисуване на куб
+  console.log('Drawing cube at:', objects.cube.x, objects.cube.y); // Debugging position
   ctx.save();
   ctx.translate(objects.cube.x, objects.cube.y);
   ctx.rotate(objects.cube.angle * Math.PI / 180);
@@ -188,6 +189,7 @@ function drawScene() {
 }
 
 // ========== КОМАНДИ ==========
+
 const COMMANDS = {
   'местя': (obj, dir) => {
     const step = 40;
@@ -261,6 +263,7 @@ function checkCollision(x, y, size) {
 }
 
 // ========== ИЗПЪЛНЕНИЕ НА КОД ==========
+
 async function runCode() {
   const code = document.getElementById('codeInput').value;
   const lines = code.split('\n').filter(line => line.trim() !== '');
@@ -297,6 +300,7 @@ function parseCommand(line) {
 }
 
 // ========== ДОПЪЛНИТЕЛНИ ФУНКЦИИ ==========
+
 function resetScene() {
   objects.cube = { ...levels[1].cube };
   objects.target = { ...levels[1].target };
@@ -325,39 +329,6 @@ function showHint() {
   
   const hints = {
     1: "Опитай: местя(куб, напред). местя(куб, напред). местя(куб, напред).",
-    2: "Опитай комбинация от движения напред и надясно, след което отново напред.",
+    2: "Опитай комбинация от движение напред и надясно, след което отново напред.",
     3: "Трябва да заобиколиш препятствията. Опитай да завъртиш куба и да се движиш в различни посоки."
   };
-  
-  statusDiv.innerHTML = `💡 Подсказка за ниво ${currentLevel}: ${hints[currentLevel]}`;
-}
-
-function checkWinCondition() {
-  const c = objects.cube;
-  const t = objects.target;
-  
-  if (Math.abs(c.x - t.x) < 30 && Math.abs(c.y - t.y) < 30) {
-    statusDiv.innerHTML = '🎉 Успех! Кубът достигна целта!';
-    
-    // Анимация за успех
-    const originalColor = c.color;
-    let flashCount = 0;
-    const flashInterval = setInterval(() => {
-      c.color = flashCount % 2 === 0 ? '#f1c40f' : originalColor;
-      drawScene();
-      flashCount++;
-      if (flashCount >= 6) {
-        clearInterval(flashInterval);
-        c.color = originalColor;
-        drawScene();
-      }
-    }, 300);
-  }
-}
-
-// Стартиране на приложението
-showLevel(1);
-</script>
-"""
-
-components.html(html_code, height=700)
