@@ -45,6 +45,10 @@ button.danger:hover {
     margin: 10px 0;
     border-left: 4px solid #2e86c1;
 }
+/* Гарантираме, че дясната колона е достатъчно широка */
+.right-column {
+    min-width: 520px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -84,9 +88,11 @@ html_code = """
   </div>
   
   <!-- Дясна колона: Визуализация -->
-  <div style="flex: 1;">
+  <div style="flex: 1;" class="right-column">
     <h3 style="color: #27ae60;">👀 Визуализация</h3>
-    <canvas id="gameCanvas" width="500" height="500" style="border: 1px solid #ddd; background: #f9f9f9;"></canvas>
+    <div style="width: 500px; height: 500px; border: 1px solid #ddd; background: #f9f9f9;">
+      <canvas id="gameCanvas" width="500" height="500"></canvas>
+    </div>
     <div style="margin-top: 10px;">
       <button onclick="showLevel(1)">Ниво 1</button>
       <button onclick="showLevel(2)">Ниво 2</button>
