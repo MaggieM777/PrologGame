@@ -2,12 +2,12 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("🧠 Куб с посока и завъртане")
+st.title("🧠 Куб с поредица от команди")
 
 html_code = """
 <div style="display: flex;">
   <div style="width: 50%; padding: 10px;">
-    <textarea id="prologInput" rows="4" style="width: 100%;">местя(куб, напред).</textarea>
+    <textarea id="prologInput" rows="4" style="width: 100%;">завъртам(куб, надясно).\nместя(куб, напред).</textarea>
     <button onclick="executePrologCommand()">Изпълни</button>
   </div>
   <div style="width: 50%;">
@@ -25,7 +25,7 @@ html_code = """
       y: 250,
       size: 50,
       color: '#00ff00',
-      direction: 'north'  // Начална посока
+      direction: 'north'
     };
 
     const directions = ['north', 'east', 'south', 'west'];
@@ -35,7 +35,6 @@ html_code = """
       ctx.fillStyle = cube.color;
       ctx.fillRect(cube.x - cube.size/2, cube.y - cube.size/2, cube.size, cube.size);
 
-      // Нарисувай стрелка според посоката
       ctx.fillStyle = '#000';
       ctx.font = '20px Arial';
       let arrow = '▲';
@@ -47,35 +46,46 @@ html_code = """
       ctx.fillText(arrow, cube.x - 8, cube.y + 6);
     }
 
-    window.executePrologCommand = function () {
-      const command = document.getElementById("prologInput").value.trim();
+    function processCommand(command) {
       const step = 30;
+      command = command.trim();
 
-      if (/местя\(куб,\s*напред\)\s*\./.test(command)) {
+      if (/^местя\(куб,\s*напред\)$/.test(command)) {
         if (cube.direction === 'north') cube.y -= step;
         else if (cube.direction === 'south') cube.y += step;
         else if (cube.direction === 'east') cube.x += step;
         else if (cube.direction === 'west') cube.x -= step;
       } 
-      else if (/завъртам\(куб,\s*наляво\)\s*\./.test(command)) {
+      else if (/^завъртам\(куб,\s*наляво\)$/.test(command)) {
         let idx = directions.indexOf(cube.direction);
-        cube.direction = directions[(idx + 3) % 4]; // Завъртане наляво
+        cube.direction = directions[(idx + 3) % 4];
       } 
-      else if (/завъртам\(куб,\s*надясно\)\s*\./.test(command)) {
+      else if (/^завъртам\(куб,\s*надясно\)$/.test(command)) {
         let idx = directions.indexOf(cube.direction);
-        cube.direction = directions[(idx + 1) % 4]; // Завъртане надясно
+        cube.direction = directions[(idx + 1) % 4];
       }
-      else {
-        alert(`Невалидна команда. Примери:
-местя(куб, напред).
-завъртам(куб, наляво).
-завъртам(куб, надясно).`);
+    }
+
+    window.executePrologCommand = function () {
+      const input = document.getElementById("prologInput").value.trim();
+      const rawCommands = input.split('.').map(cmd => cmd.trim()).filter(cmd => cmd.length > 0);
+
+      if (rawCommands.length === 0) {
+        alert("Няма открити команди.");
+        return;
       }
 
-      cube.x = Math.max(cube.size/2, Math.min(canvas.width - cube.size/2, cube.x));
-      cube.y = Math.max(cube.size/2, Math.min(canvas.height - cube.size/2, cube.y));
+      let i = 0;
 
-      drawCube();
+      function executeNext() {
+        if (i >= rawCommands.length) return;
+        processCommand(rawCommands[i]);
+        drawCube();
+        i++;
+        setTimeout(executeNext, 500); // 500ms между команди
+      }
+
+      executeNext();
     };
 
     drawCube();
