@@ -7,8 +7,12 @@ st.title("🧠 2D Prolog-like Movement")
 html_code = """
 <div style="display: flex;">
   <div style="width: 50%; padding: 10px;">
-    <textarea id="prologInput" rows="4" style="width: 100%;">местя(куб, напред).</textarea>
-    <button onclick="executePrologCommand()">Изпълни</button>
+    <textarea id="prologInput" rows="6" style="width: 100%;">местя(куб, напред).
+местя(куб, назад).
+местя(куб, ляво).
+местя(куб, дясно).</textarea>
+    <button onclick="executeCommandSequence()">Изпълни последователност</button>
+    <div id="status" style="margin-top: 10px; color: #666;"></div>
   </div>
   <div style="width: 50%;">
     <canvas id="twoCanvas" width="500" height="500" style="border: 1px solid #ccc;"></canvas>
@@ -19,8 +23,9 @@ html_code = """
   // Инициализация на 2D сцената
   const canvas = document.getElementById('twoCanvas');
   const ctx = canvas.getContext('2d');
+  const statusDiv = document.getElementById('status');
   
-  // Начална позиция на куба (квадрата)
+  // Начална позиция на куба
   let cube = {
     x: 250,
     y: 250,
@@ -39,40 +44,53 @@ html_code = """
     // Добавяме текст за ориентация
     ctx.fillStyle = '#000';
     ctx.font = '16px Arial';
-    ctx.fillText('▲', cube.x - 8, cube.y - 15);  // Стрелка напред
+    ctx.fillText('▲', cube.x - 8, cube.y - 15);
   }
 
-  // Обработка на Prolog-like команди
-  function executePrologCommand() {
-    const command = document.getElementById("prologInput").value.trim();
-    const step = 30;  // Стъпка на движение
+  // Изпълнение на единична команда
+  function executeCommand(command) {
+    const step = 30;
+    command = command.trim();
     
-    // Разпознаване на команди
     if (/местя\(куб,\s*напред\)\s*\./.test(command)) {
-      cube.y -= step;  // Нагоре по Y (в 2D "напред" обикновено е нагоре)
+      cube.y -= step;
+      return "Движение напред";
     } 
     else if (/местя\(куб,\s*назад\)\s*\./.test(command)) {
       cube.y += step;
+      return "Движение назад";
     }
     else if (/местя\(куб,\s*ляво\)\s*\./.test(command)) {
       cube.x -= step;
+      return "Движение наляво";
     }
     else if (/местя\(куб,\s*дясно\)\s*\./.test(command)) {
       cube.x += step;
+      return "Движение надясно";
     }
-    else {
-      alert(`Невалидна команда. Възможни опции:\n
-        местя(куб, напред).\n
-        местя(куб, назад).\n
-        местя(куб, ляво).\n
-        местя(куб, дясно).`);
+    return `Невалидна команда: ${command}`;
+  }
+
+  // Изпълнение на последователност от команди с анимация
+  async function executeCommandSequence() {
+    const textarea = document.getElementById("prologInput");
+    const commands = textarea.value.split('\n').filter(cmd => cmd.trim() !== '');
+    
+    for (let i = 0; i < commands.length; i++) {
+      const result = executeCommand(commands[i]);
+      statusDiv.innerHTML = `${result} (${i+1}/${commands.length})`;
+      
+      // Проверка за граници
+      cube.x = Math.max(cube.size/2, Math.min(canvas.width - cube.size/2, cube.x));
+      cube.y = Math.max(cube.size/2, Math.min(canvas.height - cube.size/2, cube.y));
+      
+      drawCube();
+      
+      // Забавяне за анимация (800ms)
+      await new Promise(resolve => setTimeout(resolve, 800));
     }
     
-    // Проверка за граници
-    cube.x = Math.max(cube.size/2, Math.min(canvas.width - cube.size/2, cube.x));
-    cube.y = Math.max(cube.size/2, Math.min(canvas.height - cube.size/2, cube.y));
-    
-    drawCube();
+    statusDiv.innerHTML = "Всички команди са изпълнени";
   }
 
   // Първоначално рисуване
@@ -80,4 +98,4 @@ html_code = """
 </script>
 """
 
-components.html(html_code, height=550)
+components.html(html_code, height=600)
