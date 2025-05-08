@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 
-st.title("🧠 Learn Prolog with 3D Visualization")
+st.title("Learn Prolog with 3D Visualization")
 
 html_code = """
 <div style="display: flex;">
@@ -27,9 +27,8 @@ html_code = """
     camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("threeCanvas") });
     renderer.setSize(400, 400);
-    camera.position.z = 5; // Камерата трябва да е по-далеч, за да виждаме куба
+    camera.position.z = 5;
 
-    // Тук използваме куб с фиксиран размер (не променяме мащаба)
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     cube = new THREE.Mesh(geometry, material);
@@ -43,15 +42,18 @@ html_code = """
   }
 
   function moveObject(direction) {
-    // Преместваме куба по X и Z оси
     if (direction === "forward") {
-      cube.position.z -= 0.5;  // Преместваме куба напред по Z ос
+      cube.position.z -= 0.5;
+      camera.position.z -= 0.5;  // Камерата се движи заедно с куба
     } else if (direction === "backward") {
-      cube.position.z += 0.5;  // Преместваме куба назад по Z ос
+      cube.position.z += 0.5;
+      camera.position.z += 0.5;
     } else if (direction === "left") {
-      cube.position.x -= 0.5;  // Преместваме куба наляво по X ос
+      cube.position.x -= 0.5;
+      camera.position.x -= 0.5;
     } else if (direction === "right") {
-      cube.position.x += 0.5;  // Преместваме куба надясно по X ос
+      cube.position.x += 0.5;
+      camera.position.x += 0.5;
     }
   }
 
@@ -64,7 +66,7 @@ html_code = """
           success: function (goal) {
             session.answer({
               success: function () {
-                moveObject("forward"); // Преместваме куба напред
+                moveObject("forward");
               },
               fail: function () {
                 alert("Incorrect or missing rule.");
@@ -81,8 +83,6 @@ html_code = """
 
   initScene();
 </script>
-
 """
 
-# Embed the entire interface
 components.html(html_code, height=500)
