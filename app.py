@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("🧠 2D Prolog-like Movement")
+st.title("2D Prolog-like Movement")
 
 html_code = """
 <div style="display: flex;">
