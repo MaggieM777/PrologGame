@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 
-st.title("Learn Prolog with 3D Visualization")
+st.title("🧠 Learn Prolog with 3D Visualization")
 
 html_code = """
 <div style="display: flex;">
@@ -16,8 +16,8 @@ html_code = """
   </div>
 </div>
 
-<script src="https://unpkg.com/three@0.160.1/build/three.min.js"></script>
-<script src="https://unpkg.com/tau-prolog@0.3.1/modules/core.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tau-prolog@0.3.1/modules/core.min.js"></script>
 
 <script>
   let scene, camera, renderer, cube;
@@ -44,44 +44,51 @@ html_code = """
   function moveObject(direction) {
     if (direction === "forward") {
       cube.position.z -= 0.5;
-      camera.position.z -= 0.5;  // Камерата се движи заедно с куба
     } else if (direction === "backward") {
       cube.position.z += 0.5;
-      camera.position.z += 0.5;
     } else if (direction === "left") {
       cube.position.x -= 0.5;
-      camera.position.x -= 0.5;
     } else if (direction === "right") {
       cube.position.x += 0.5;
-      camera.position.x += 0.5;
     }
   }
 
   function runProlog() {
-    let code = document.getElementById("prologInput").value;
-    let session = pl.create();
-    session.consult("move(forward). " + code, {
-      success: function () {
-        session.query("move(forward).", {
-          success: function (goal) {
+    const code = document.getElementById("prologInput").value;
+    
+    // Създаваме Prolog сесия
+    const session = pl.create(1000);
+    
+    // Зареждаме кода
+    session.consult(code, {
+      success: function() {
+        // Изпълняваме заявката
+        session.query("move(Direction).", {
+          success: function(goal) {
             session.answer({
-              success: function () {
-                moveObject("forward");
+              success: function(answer) {
+                // Взимаме посоката от отговора
+                const direction = answer.links.Direction.id;
+                moveObject(direction);
               },
-              fail: function () {
-                alert("Incorrect or missing rule.");
+              fail: function() {
+                alert("No solution found.");
               }
             });
+          },
+          error: function(err) {
+            alert("Query error: " + err);
           }
         });
       },
-      error: function (err) {
-        alert("Syntax error: " + err);
+      error: function(err) {
+        alert("Consult error: " + err);
       }
     });
   }
 
-  initScene();
+  // Инициализираме сцената при зареждане
+  window.onload = initScene;
 </script>
 """
 
