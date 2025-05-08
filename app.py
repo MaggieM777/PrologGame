@@ -41,8 +41,16 @@ html_code = """
     renderer.render(scene, camera);
   }
 
-  function moveObject() {
-    cube.position.z -= 0.5; // Местим кубчето напред (намаляваме Z координатата)
+  function moveObject(direction) {
+    if (direction === "forward") {
+      cube.position.z -= 0.5;  // Преместваме куба напред по Z ос
+    } else if (direction === "backward") {
+      cube.position.z += 0.5;  // Преместваме куба назад по Z ос
+    } else if (direction === "left") {
+      cube.position.x -= 0.5;  // Преместваме куба наляво по X ос
+    } else if (direction === "right") {
+      cube.position.x += 0.5;  // Преместваме куба надясно по X ос
+    }
   }
 
   function runProlog() {
@@ -54,7 +62,7 @@ html_code = """
           success: function (goal) {
             session.answer({
               success: function () {
-                moveObject(); // Преместваме кубчето напред
+                moveObject("forward"); // Преместваме куба напред
               },
               fail: function () {
                 alert("Incorrect or missing rule.");
@@ -71,6 +79,7 @@ html_code = """
 
   initScene();
 </script>
+
 
 """
 
