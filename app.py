@@ -162,21 +162,20 @@ function drawScene() {
   // Рисуване на цел
   ctx.fillStyle = objects.target.color;
   ctx.fillRect(
-    objects.target.x - objects.target.size/2,
-    objects.target.y - objects.target.size/2,
+    objects.target.x - objects.target.size / 2,
+    objects.target.y - objects.target.size / 2,
     objects.target.size,
     objects.target.size
   );
   
   // Рисуване на куб
-  console.log('Drawing cube at:', objects.cube.x, objects.cube.y); // Debugging position
   ctx.save();
   ctx.translate(objects.cube.x, objects.cube.y);
   ctx.rotate(objects.cube.angle * Math.PI / 180);
   ctx.fillStyle = objects.cube.color;
   ctx.fillRect(
-    -objects.cube.size/2,
-    -objects.cube.size/2,
+    -objects.cube.size / 2,
+    -objects.cube.size / 2,
     objects.cube.size,
     objects.cube.size
   );
@@ -279,7 +278,7 @@ async function runCode() {
     const line = lines[i].trim();
     let result = parseCommand(line);
     
-    statusDiv.innerHTML = `📝 ${result} (${i+1}/${lines.length})`;
+    statusDiv.innerHTML = `📝 ${result} (${i + 1}/${lines.length})`;
     drawScene();
     await new Promise(r => setTimeout(r, 800));
   }
