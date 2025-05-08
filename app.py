@@ -2,16 +2,16 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("🧠 Learn Prolog with 3D Visualization")
+st.title("🧠 3D Cube Movement")
 
 html_code = """
 <div style="display: flex;">
   <div style="width: 50%; padding: 10px;">
-    <textarea id="prologInput" rows="10" style="width: 100%;">move(forward).</textarea>
+    <textarea id="commandInput" rows="4" style="width: 100%;">forward</textarea>
     <button onclick="moveCube()">Move Cube</button>
   </div>
   <div style="width: 50%;">
-    <canvas id="threeCanvas" width="400" height="400" style="border: 1px solid #ccc;"></canvas>
+    <canvas id="threeCanvas" width="500" height="500" style="border: 1px solid #ccc;"></canvas>
   </div>
 </div>
 
@@ -21,17 +21,29 @@ html_code = """
   let scene, camera, renderer, cube;
 
   function initScene() {
+    // 1. Създаваме сцена
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, 400/400, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({canvas: document.getElementById("threeCanvas")});
-    renderer.setSize(400, 400);
+    scene.background = new THREE.Color(0xf0f0f0);
     
-    const geometry = new THREE.BoxGeometry();
+    // 2. Настройваме камера
+    camera = new THREE.PerspectiveCamera(75, 500/500, 0.1, 1000);
+    camera.position.set(5, 5, 5);
+    camera.lookAt(0, 0, 0);
+    
+    // 3. Създаваме рендерер
+    renderer = new THREE.WebGLRenderer({canvas: document.getElementById("threeCanvas")});
+    renderer.setSize(500, 500);
+    
+    // 4. Добавяме куб
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
     cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
     
-    camera.position.z = 5;
+    // 5. Добавяме помощни оси (за визуализация)
+    const axesHelper = new THREE.AxesHelper(2);
+    scene.add(axesHelper);
+    
     animate();
   }
 
@@ -41,27 +53,41 @@ html_code = """
   }
 
   function moveCube() {
-    const command = document.getElementById("prologInput").value.trim();
+    const command = document.getElementById("commandInput").value.trim().toLowerCase();
     
-    if(command === "move(forward).") {
-      cube.position.z -= 0.5;
-    } 
-    else if(command === "move(backward).") {
-      cube.position.z += 0.5;
+    // Разстояние на движение
+    const step = 1.0;
+    
+    switch(command) {
+      case "forward":
+        cube.position.z -= step;  // Z намалява = напред
+        break;
+      case "backward":
+        cube.position.z += step;  // Z нараства = назад
+        break;
+      case "left":
+        cube.position.x -= step;  // X намалява = наляво
+        break;
+      case "right":
+        cube.position.x += step;  // X нараства = надясно
+        break;
+      case "up":
+        cube.position.y += step;  // Y нараства = нагоре
+        break;
+      case "down":
+        cube.position.y -= step;  // Y намалява = надолу
+        break;
+      default:
+        alert(`Invalid command. Try: forward, backward, left, right, up, down`);
     }
-    else if(command === "move(left).") {
-      cube.position.x -= 0.5;
-    }
-    else if(command === "move(right).") {
-      cube.position.x += 0.5;
-    }
-    else {
-      alert("Invalid command. Use: move(forward)., move(backward)., etc.");
-    }
+    
+    // Препоръчително: пренасочваме камерата към куба
+    camera.lookAt(cube.position);
   }
 
+  // Инициализация при зареждане
   window.onload = initScene;
 </script>
 """
 
-components.html(html_code, height=500)
+components.html(html_code, height=600)
