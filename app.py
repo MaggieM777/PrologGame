@@ -2,13 +2,34 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("🧠 Куб с поредица от команди")
+st.title("🧠 Урок 1: Движение и Завъртане на Куб")
+
+st.markdown("""
+## 📘 Инструкции:
+
+Този урок ще ти покаже как можеш да управляваш едно "кубче", използвайки **Prolog-подобни команди**.
+
+### Команди, които можеш да използваш:
+
+- `местя(куб, напред).` – премества куба в посоката, в която гледа.
+- `завъртам(куб, надясно).` – завърта куба надясно (по часовниковата стрелка).
+- `завъртам(куб, наляво).` – завърта куба наляво (противоположно на часовниковата стрелка).
+
+### Пример:
+местя(куб, напред).
+завъртам(куб, надясно).
+местя(куб, напред).
+
+След като въведеш командите, натисни **"Изпълни"**, за да ги изпълниш.
+""")
 
 html_code = """
 <div style="display: flex;">
   <div style="width: 50%; padding: 10px;">
-    <textarea id="prologInput" rows="4" style="width: 100%;">завъртам(куб, надясно).\nместя(куб, напред).</textarea>
-    <button onclick="executePrologCommand()">Изпълни</button>
+    <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">местя(куб, напред).
+завъртам(куб, надясно).
+местя(куб, напред).</textarea>
+    <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
   </div>
   <div style="width: 50%;">
     <canvas id="twoCanvas" width="500" height="500" style="border: 1px solid #ccc;"></canvas>
@@ -50,17 +71,17 @@ html_code = """
       const step = 30;
       command = command.trim();
 
-      if (/^местя\(куб,\s*напред\)$/.test(command)) {
+      if (/^местя\\(куб,\\s*напред\\)$/.test(command)) {
         if (cube.direction === 'north') cube.y -= step;
         else if (cube.direction === 'south') cube.y += step;
         else if (cube.direction === 'east') cube.x += step;
         else if (cube.direction === 'west') cube.x -= step;
       } 
-      else if (/^завъртам\(куб,\s*наляво\)$/.test(command)) {
+      else if (/^завъртам\\(куб,\\s*наляво\\)$/.test(command)) {
         let idx = directions.indexOf(cube.direction);
         cube.direction = directions[(idx + 3) % 4];
       } 
-      else if (/^завъртам\(куб,\s*надясно\)$/.test(command)) {
+      else if (/^завъртам\\(куб,\\s*надясно\\)$/.test(command)) {
         let idx = directions.indexOf(cube.direction);
         cube.direction = directions[(idx + 1) % 4];
       }
@@ -82,7 +103,7 @@ html_code = """
         processCommand(rawCommands[i]);
         drawCube();
         i++;
-        setTimeout(executeNext, 500); // 500ms между команди
+        setTimeout(executeNext, 500);
       }
 
       executeNext();
@@ -93,4 +114,4 @@ html_code = """
 </script>
 """
 
-components.html(html_code, height=550)
+components.html(html_code, height=600)
