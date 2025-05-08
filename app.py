@@ -27,7 +27,7 @@ html_code = """
     camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("threeCanvas") });
     renderer.setSize(400, 400);
-    camera.position.z = 5;
+    camera.position.z = 5; // Камерата трябва да е по-далеч, за да виждаме куба
 
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -42,7 +42,7 @@ html_code = """
   }
 
   function moveObject() {
-    cube.position.z -= 1;
+    cube.position.z -= 0.5; // Местим кубчето напред (намаляваме Z координатата)
   }
 
   function runProlog() {
@@ -54,7 +54,7 @@ html_code = """
           success: function (goal) {
             session.answer({
               success: function () {
-                moveObject();
+                moveObject(); // Преместваме кубчето напред
               },
               fail: function () {
                 alert("Incorrect or missing rule.");
@@ -71,6 +71,7 @@ html_code = """
 
   initScene();
 </script>
+
 """
 
 # Embed the entire interface
