@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("3D Prolog-like Movement")
+st.title("🧠 2D Prolog-like Movement")
 
 html_code = """
 <div style="display: flex;">
@@ -11,86 +11,73 @@ html_code = """
     <button onclick="executePrologCommand()">Изпълни</button>
   </div>
   <div style="width: 50%;">
-    <canvas id="threeCanvas" width="500" height="500" style="border: 1px solid #ccc;"></canvas>
+    <canvas id="twoCanvas" width="500" height="500" style="border: 1px solid #ccc;"></canvas>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script>
-  let scene, camera, renderer, cube;
+  // Инициализация на 2D сцената
+  const canvas = document.getElementById('twoCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  // Начална позиция на куба (квадрата)
+  let cube = {
+    x: 250,
+    y: 250,
+    size: 50,
+    color: '#00ff00'
+  };
 
-  function initScene() {
-    // 1. Създаваме 3D сцена
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+  // Функция за рисуване на куба
+  function drawCube() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 2. Настройка на камерата
-    camera = new THREE.PerspectiveCamera(75, 500/500, 0.1, 1000);
-    camera.position.set(3, 3, 3);
-    camera.lookAt(0, 0, 0);
+    // Рисуваме квадрат
+    ctx.fillStyle = cube.color;
+    ctx.fillRect(cube.x - cube.size/2, cube.y - cube.size/2, cube.size, cube.size);
     
-    // 3. Създаване на рендерер
-    renderer = new THREE.WebGLRenderer({canvas: document.getElementById("threeCanvas")});
-    renderer.setSize(500, 500);
-    
-    // 4. Добавяне на куб
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: false});
-    cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-    
-    // 5. Помощни оси
-    const axesHelper = new THREE.AxesHelper(2);
-    scene.add(axesHelper);
-    
-    animate();
+    // Добавяме текст за ориентация
+    ctx.fillStyle = '#000';
+    ctx.font = '16px Arial';
+    ctx.fillText('▲', cube.x - 8, cube.y - 15);  // Стрелка напред
   }
 
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-  }
-
+  // Обработка на Prolog-like команди
   function executePrologCommand() {
     const command = document.getElementById("prologInput").value.trim();
+    const step = 30;  // Стъпка на движение
     
-    // Разпознаване на Prolog-like команди
+    // Разпознаване на команди
     if (/местя\(куб,\s*напред\)\s*\./.test(command)) {
-      cube.position.z -= 1;
+      cube.y -= step;  // Нагоре по Y (в 2D "напред" обикновено е нагоре)
     } 
     else if (/местя\(куб,\s*назад\)\s*\./.test(command)) {
-      cube.position.z += 1;
+      cube.y += step;
     }
     else if (/местя\(куб,\s*ляво\)\s*\./.test(command)) {
-      cube.position.x -= 1;
+      cube.x -= step;
     }
     else if (/местя\(куб,\s*дясно\)\s*\./.test(command)) {
-      cube.position.x += 1;
-    }
-    else if (/местя\(куб,\s*горе\)\s*\./.test(command)) {
-      cube.position.y += 1;
-    }
-    else if (/местя\(куб,\s*долу\)\s*\./.test(command)) {
-      cube.position.y -= 1;
+      cube.x += step;
     }
     else {
       alert(`Невалидна команда. Възможни опции:\n
         местя(куб, напред).\n
         местя(куб, назад).\n
         местя(куб, ляво).\n
-        местя(куб, дясно).\n
-        местя(куб, горе).\n
-        местя(куб, долу).`);
+        местя(куб, дясно).`);
     }
     
-    // Камерата следи куба
-    camera.lookAt(cube.position);
+    // Проверка за граници
+    cube.x = Math.max(cube.size/2, Math.min(canvas.width - cube.size/2, cube.x));
+    cube.y = Math.max(cube.size/2, Math.min(canvas.height - cube.size/2, cube.y));
+    
+    drawCube();
   }
 
-  // Инициализация при зареждане
-  window.onload = initScene;
+  // Първоначално рисуване
+  drawCube();
 </script>
 """
 
-components.html(html_code, height=600)
+components.html(html_code, height=550)
