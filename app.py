@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 
-st.title("🧠 Learn Prolog with 3D Visualization")
+st.title("Learn Prolog with 3D Visualization")
 
 html_code = """
 <div style="display: flex;">
@@ -42,6 +42,7 @@ html_code = """
   }
 
   function moveObject(direction) {
+    // Проверяваме дали позицията на камерата или други елементи не водят до визуално смаляване
     if (direction === "forward") {
       cube.position.z -= 0.5;  // Преместваме куба напред по Z ос
     } else if (direction === "backward") {
@@ -79,7 +80,6 @@ html_code = """
 
   initScene();
 </script>
-
 
 """
 
