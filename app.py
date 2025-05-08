@@ -2,135 +2,107 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
-st.title("🧠 2D Prolog Movement Visualizer")
+st.title("🧠 2D Prolog-like Movement")
 
 html_code = """
-<div style="display: flex; gap: 20px;">
-  <!-- Code Editor Column -->
-  <div style="flex: 1; min-width: 300px;">
-    <h3 style="color: #2e86c1;">✏️ Prolog Commands</h3>
-    <textarea id="codeInput" rows="8" style="width: 100%; font-family: monospace;">местя(куб, напред).
-местя(куб, дясно).
+<div style="display: flex;">
+  <div style="width: 50%; padding: 10px;">
+    <textarea id="prologInput" rows="6" style="width: 100%; font-family: monospace;">местя(куб, напред).
 местя(куб, назад).
-местя(куб, ляво).</textarea>
-    
-    <button onclick="executeSequence()" style="margin-top: 10px; padding: 8px 15px; background: #2e86c1; color: white; border: none; border-radius: 4px; cursor: pointer;">▶ Run Commands</button>
-    <div id="status" style="margin-top: 10px; padding: 10px; background: #e6f7ff; border-radius: 4px;"></div>
+местя(куб, ляво).
+местя(куб, дясно).</textarea>
+    <button onclick="executeCommandSequence()" style="margin-top: 10px; padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">▶ Изпълни</button>
+    <div id="status" style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 4px;"></div>
   </div>
-  
-  <!-- Visualization Column -->
-  <div style="flex: 1;">
-    <h3 style="color: #27ae60;">🟩 Cube Movement</h3>
-    <canvas id="gameCanvas" width="400" height="400" style="border: 1px solid #ddd; background: #f9f9f9;"></canvas>
+  <div style="width: 50%;">
+    <canvas id="gameCanvas" width="500" height="500" style="border: 1px solid #ddd; background: #f9f9f9;"></canvas>
   </div>
 </div>
 
 <script>
-// ========== INITIALIZATION ==========
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const statusDiv = document.getElementById('status');
 
-// Cube settings
+// Ключова промяна: Обърната Y координатна система
 let cube = {
-  x: 50,
-  y: 50,
-  size: 60,
-  color: '#2ecc71'
+  x: 250,
+  y: 250,  // Y нараства надолу в Canvas 2D
+  size: 50,
+  color: '#E74C3C'  // Ярко червен цвят
 };
 
-// Draw grid background
-function drawGrid() {
-  ctx.strokeStyle = '#e0e0e0';
-  ctx.lineWidth = 1;
+// Функция за рисуване на куба
+function drawCube() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Vertical lines
+  // Координатна мрежа за ориентация
+  ctx.strokeStyle = '#e0e0e0';
   for (let x = 0; x <= canvas.width; x += 50) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
   }
-  
-  // Horizontal lines
   for (let y = 0; y <= canvas.height; y += 50) {
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(canvas.width, y);
     ctx.stroke();
   }
-}
-
-// Draw the cube
-function drawCube() {
-  ctx.fillStyle = cube.color;
-  ctx.fillRect(cube.x, cube.y, cube.size, cube.size);
   
-  // Draw orientation marker
+  // Рисуване на куба (центриран)
+  ctx.fillStyle = cube.color;
+  ctx.fillRect(cube.x - cube.size/2, cube.y - cube.size/2, cube.size, cube.size);
+  
+  // Ориентационна стрелка
   ctx.fillStyle = '#fff';
-  ctx.font = 'bold 24px Arial';
+  ctx.font = '16px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('↑', cube.x + cube.size/2, cube.y + cube.size/2);
+  ctx.fillText('↑', cube.x, cube.y);
 }
 
-// Main drawing function
-function drawScene() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawGrid();
-  drawCube();
-}
-
-// Command execution
+// Обработка на команди с правилни посоки
 function executeCommand(command) {
-  const step = 50;
+  const step = 40;
   command = command.trim();
   
   if (/местя\(куб,\s*напред\)\s*\./.test(command)) {
-    cube.y -= step;
-    return "Moving forward";
+    cube.y -= step;  // Нагоре = намалява Y
   } 
   else if (/местя\(куб,\s*назад\)\s*\./.test(command)) {
-    cube.y += step;
-    return "Moving backward";
+    cube.y += step;  // Надолу = увеличава Y
   }
   else if (/местя\(куб,\s*ляво\)\s*\./.test(command)) {
     cube.x -= step;
-    return "Moving left";
   }
   else if (/местя\(куб,\s*дясно\)\s*\./.test(command)) {
     cube.x += step;
-    return "Moving right";
   }
-  return `Unknown command: ${command}`;
 }
 
-// Execute command sequence with animation
-async function executeSequence() {
-  const textarea = document.getElementById("codeInput");
+// Изпълнение на последователност
+async function executeCommandSequence() {
+  const textarea = document.getElementById("prologInput");
   const commands = textarea.value.split('\n').filter(cmd => cmd.trim() !== '');
   
-  statusDiv.innerHTML = '⏳ Starting execution...';
-  
   for (let i = 0; i < commands.length; i++) {
-    const result = executeCommand(commands[i]);
-    statusDiv.innerHTML = `📝 ${result} (${i+1}/${commands.length})`;
+    executeCommand(commands[i]);
     
-    // Boundary check
-    cube.x = Math.max(0, Math.min(canvas.width - cube.size, cube.x));
-    cube.y = Math.max(0, Math.min(canvas.height - cube.size, cube.y));
+    // Гранични проверки
+    cube.x = Math.max(cube.size/2, Math.min(canvas.width - cube.size/2, cube.x));
+    cube.y = Math.max(cube.size/2, Math.min(canvas.height - cube.size/2, cube.y));
     
-    drawScene();
-    await new Promise(r => setTimeout(r, 800));
+    drawCube();
+    await new Promise(r => setTimeout(r, 600));
   }
-  
-  statusDiv.innerHTML = "✅ All commands executed!";
 }
 
-// Initial setup
-drawScene();
-statusDiv.innerHTML = "🟢 Ready for commands";
+// Първоначално рисуване
+window.onload = drawCube;
 </script>
 """
 
-components.html(html_code, height=550)
+components.html(html_code, height=600)
