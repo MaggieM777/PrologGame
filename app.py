@@ -25,7 +25,9 @@ if page == "Урок 1":
     html_code = """ 
     <div style="display: flex;">
       <div style="width: 50%; padding: 10px;">
-        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;"></textarea>
+        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">местя(куб, напред).
+завъртам(куб, надясно).
+местя(куб, напред).</textarea>
         <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
       </div>
       <div style="width: 50%;">
@@ -40,7 +42,7 @@ if page == "Урок 1":
 
         let cube = {
           x: 250,
-          y: 250,
+          y: 450,
           size: 50,
           color: '#00ff00',
           direction: 'north'
@@ -48,11 +50,21 @@ if page == "Урок 1":
 
         const directions = ['north', 'east', 'south', 'west'];
 
-        function drawCube() {
+        // Целева позиция
+        const target = { x: 400, y: 400 };
+
+        function drawScene() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Цел
+          ctx.fillStyle = '#ff0000';
+          ctx.fillRect(target.x - 5, target.y - 5, 10, 10);
+
+          // Куб
           ctx.fillStyle = cube.color;
           ctx.fillRect(cube.x - cube.size/2, cube.y - cube.size/2, cube.size, cube.size);
 
+          // Стрелка на куба
           ctx.fillStyle = '#000';
           ctx.font = '20px Arial';
           let arrow = '▲';
@@ -60,8 +72,14 @@ if page == "Урок 1":
           else if (cube.direction === 'east') arrow = '▶';
           else if (cube.direction === 'south') arrow = '▼';
           else if (cube.direction === 'west') arrow = '◀';
-
           ctx.fillText(arrow, cube.x - 8, cube.y + 6);
+
+          // Проверка дали куба е стигнал целта
+          if (Math.abs(cube.x - target.x) < cube.size && Math.abs(cube.y - target.y) < cube.size) {
+            alert("Поздравления!");
+            let audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+            audio.play();
+          }
         }
 
         function processCommand(command) {
@@ -98,7 +116,7 @@ if page == "Урок 1":
           function executeNext() {
             if (i >= rawCommands.length) return;
             processCommand(rawCommands[i]);
-            drawCube();
+            drawScene();
             i++;
             setTimeout(executeNext, 500);
           }
@@ -106,24 +124,24 @@ if page == "Урок 1":
           executeNext();
         };
 
-        drawCube();
+        drawScene();
       });
     </script>
     """
     components.html(html_code, height=600)
 
 elif page == "Урок 2":
-    st.title("Урок 2: Препятствия и правила")
+    st.title("Урок 2: Препятствия и Правила")
 
     st.markdown("""
     ## Правила
 
-    В този урок ще използваме **правила в стил Prolog**, за да накараме куба да се движи по определени правила.
+    В този урок ще използваме **правила в стил Prolog**, за да накараме куба да мисли преди да се движи.
 
     ### Примери:
 
     - `ако_свободно(куб, напред) :- местя(куб, напред).`
-    - `ако_има_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).`
+    - `ако_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).`
 
     Кубът ще избягва препятствия автоматично, ако използваш подходящи правила.
     """)
@@ -133,7 +151,9 @@ elif page == "Урок 2":
     html_code = """
     <div style="display: flex;">
       <div style="width: 50%; padding: 10px;">
-        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;"></textarea>
+        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">ако_свободно(куб, напред) :- местя(куб, напред).
+ако_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).
+ако_препятствие(куб, напред).</textarea>
         <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
       </div>
       <div style="width: 50%;">
@@ -217,14 +237,16 @@ elif page == "Урок 2":
 
       function processCommand(cmd) {
         if (cmd === "местя(куб, напред)") {
-          moveForward();
+          if (!isObstacleAhead()) {
+            moveForward();
+          }
         } else if (cmd === "завъртам(куб, наляво)") {
           turnLeft();
         } else if (cmd === "завъртам(куб, надясно)") {
           turnRight();
         } else if (cmd.startsWith("ако_свободно")) {
           if (!isObstacleAhead()) moveForward();
-        } else if (cmd.startsWith("ако_има_препятствие")) {
+        } else if (cmd.startsWith("ако_препятствие")) {
           if (isObstacleAhead()) {
             turnRight();
             moveForward();
