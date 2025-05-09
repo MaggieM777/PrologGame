@@ -113,17 +113,17 @@ if page == "Урок 1":
     components.html(html_code, height=600)
 
 elif page == "Урок 2":
-    st.title("Урок 2: Препятствия и Правила")
+    st.title("Урок 2: Препятствия и правила")
 
     st.markdown("""
-    ## 🧱 Пречки и Интелигентно Движение
+    ## 🧱 Препятствия
 
-    В този урок ще използваме **правила в стил Prolog**, за да накараме куба да мисли преди да се движи.
+    В този урок ще използваме **правила в стил Prolog**, за да накараме куба да се движи по определени правила.
 
     ### 🧠 Примери:
 
     - `ако_свободно(куб, напред) :- местя(куб, напред).`
-    - `ако_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).`
+    - `ако_има_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).`
 
     Кубът ще избягва препятствия автоматично, ако използваш подходящи правила.
     """)
@@ -133,9 +133,7 @@ elif page == "Урок 2":
     html_code = """
     <div style="display: flex;">
       <div style="width: 50%; padding: 10px;">
-        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">ако_свободно(куб, напред) :- местя(куб, напред).
-ако_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).
-ако_препятствие(куб, напред).</textarea>
+        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;"></textarea>
         <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
       </div>
       <div style="width: 50%;">
@@ -226,7 +224,7 @@ elif page == "Урок 2":
           turnRight();
         } else if (cmd.startsWith("ако_свободно")) {
           if (!isObstacleAhead()) moveForward();
-        } else if (cmd.startsWith("ако_препятствие")) {
+        } else if (cmd.startsWith("ако_има_препятствие")) {
           if (isObstacleAhead()) {
             turnRight();
             moveForward();
