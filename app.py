@@ -108,5 +108,10 @@ html_code = """
   });
 </script>
 """
+st.markdown("---")
+if st.button("➡️ Премини към Урок 2"):
+    st.markdown("""
+    <meta http-equiv="refresh" content="0; url='/lesson2'" />
+    """, unsafe_allow_html=True)
 
 components.html(html_code, height=600)
