@@ -25,9 +25,7 @@ if page == "Урок 1":
     html_code = """ 
     <div style="display: flex;">
       <div style="width: 50%; padding: 10px;">
-        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">местя(куб, напред).
-завъртам(куб, надясно).
-местя(куб, напред).</textarea>
+        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;"></textarea>
         <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
       </div>
       <div style="width: 50%;">
@@ -151,9 +149,7 @@ elif page == "Урок 2":
     html_code = """
     <div style="display: flex;">
       <div style="width: 50%; padding: 10px;">
-        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;">ако_свободно(куб, напред) :- местя(куб, напред).
-ако_препятствие(куб, напред) :- завъртам(куб, надясно), местя(куб, напред).
-ако_препятствие(куб, напред).</textarea>
+        <textarea id="prologInput" rows="8" style="width: 100%; font-size: 16px;"></textarea>
         <button onclick="executePrologCommand()" style="margin-top: 10px; padding: 8px 16px; font-size: 16px;">Изпълни</button>
       </div>
       <div style="width: 50%;">
